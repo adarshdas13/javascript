@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub User Card</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            background-color: #7380bd;;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .toggle-btn {
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background: #667eea;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .toggle-btn:active {
+            transform: translateY(0);
+        }
+
+        .toggle-btn.active {
+            background: #e74c3c;
+        }
+
+        .toggle-btn.active:hover {
+            background: #c0392b;
+        }
+
+        .user-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 350px;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        }
+        .user-card.hide {
+            animation: slideOut 0.5s ease-out forwards;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            border: 4px solid #667eea;
+            object-fit: cover;
+        }
+
+        .username {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin: 15px 0;
+        }
+
+        .followers {
+            font-size: 16px;
+            color: #666;
+            margin: 10px 0;
+        }
+
+        .followers-count {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        #container {
+            min-height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <button id="toggleBtn" class="toggle-btn">Show User Card</button>
+    <div id="container"></div>
+
+    <script>
+        const reqUrl = 'https://api.github.com/users/abinash1017';
+        const container = document.getElementById('container');
+        const toggleBtn = document.getElementById('toggleBtn');
+        let isShowing = false;
+
+        toggleBtn.addEventListener('click', function() {
+            isShowing = !isShowing;
+
+            if (isShowing) {
+                toggleBtn.textContent = 'Hide User Card';
+                toggleBtn.classList.add('active');
+                fetchUserData();
+            } else {
+                toggleBtn.textContent = 'Show User Card';
+                toggleBtn.classList.remove('active');
+                container.innerHTML = '';
+            }
+        });
+
+        function fetchUserData() {
+            // Show loading state
+            container.innerHTML = '<div class="loading">Loading user data...</div>';
+
+            let xhr = new XMLHttpRequest();
+            xhr.open('GET', reqUrl);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        const data = JSON.parse(this.responseText);
+                        
+                        const card = `
+                            <div class="user-card">
+                                <img src="${data.avatar_url}" alt="${data.login}" class="avatar">
+                                <div class="username">@${data.login}</div>
+                                <div class="followers">
+                                    Followers
+                                    <div class="followers-count">${data.followers}</div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        container.innerHTML = card;
+                        console.log(data.login);
+                        console.log(data.followers);
+                        console.log(data.avatar_url);
+                    } else {
+                        container.innerHTML = '<div class="error">Error loading user data. Status: ' + xhr.status + '</div>';
+                    }
+                }
+            };
+            xhr.onerror = function() {
+                container.innerHTML = '<div class="error">Failed to fetch data. Please check your connection.</div>';
+            };
+            xhr.send();
+        }
+    </script>
+</body>
+</html>
