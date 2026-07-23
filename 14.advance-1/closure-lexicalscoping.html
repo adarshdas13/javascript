@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id="orange">orange</button>
+    <button id="green">green</button>
+    <button id="purple">purple</button>
+    <script>
+
+        //a great way but if given multiple values not feasible
+        // let orangebtn = document.querySelector("#orange").addEventListener('click', function(){
+        //     document.body.style.backgroundColor = "orange"
+        // })
+        // let greenbtn = document.querySelector("#green").addEventListener('click', function(){
+        //     document.body.style.backgroundColor = "green"
+        // })
+        // let purplebtn = document.querySelector("#purple").addEventListener('click', function(){
+        //     document.body.style.backgroundColor = "purple"
+        // })
+
+        //using closure & lexical scoping we can do it in thid way
+        function clickHandler(color){
+            return function(){
+                document.body.style.backgroundColor = `${color}`
+            }
+        }
+        document.querySelector("#orange").onclick = clickHandler("orange")
+        document.querySelector("#green").onclick = clickHandler("green")
+        document.querySelector("#purple").onclick = clickHandler("purple")
+    </script>
+    <script>
+        //lexical scoping - inner function has access to outer function scope in technicalities
+        function outer(){
+            let lang = "javascript"
+            function innerone(){
+                let extension = ".js"
+                console.log(`inner:${lang}`);
+                    function innertwo(){
+                        console.log(`inner2:${extension}`);
+                    }
+                    innertwo()
+            }
+            innerone()
+        }
+        outer()
+
+        //closure - we return a function,not only that function returns but also its complete lexical scope is returned
+        function makeFunc(){
+            const name = "brave"
+            function displayName(){
+                console.log(name);
+            }
+            return displayName
+        }
+        let myFunc = makeFunc()
+        myFunc()
+    </script>
+</body>
+</html>
